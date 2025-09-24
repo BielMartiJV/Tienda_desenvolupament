@@ -1,0 +1,7 @@
+# Node / backend
+node_modules/
+dist/
+.env
+
+# Docker
+mongo_data/
