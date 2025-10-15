@@ -1,7 +1,0 @@
-# Backend
-backend/node_modules/
-backend/docker/.env
-backend/docker/mongo_data/
-
-# Frontend
-frontend/node_modules/
