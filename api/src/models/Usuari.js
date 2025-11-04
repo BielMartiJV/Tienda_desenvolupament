@@ -1,16 +1,13 @@
 // src/models/Usuari.js
 const mongoose = require('mongoose');
 
-const usuariSchema = new mongoose.Schema({
+const UsuariSchema = new mongoose.Schema({
   nom: { type: String, required: true },
-  correu: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [/.+\@.+\..+/, 'El correu no té un format vàlid']
-  },
-  contrasenya: { type: String, required: true, minlength: 6 },
-  rol: { type: String, enum: ['client', 'admin'], default: 'client' }
+  cognom: { type: String, required: true },
+  email: { type: String, required: true, unique: true, match: /^\S+@\S+\.\S+$/ },
+  password: { type: String, required: true, minlength: 6 }, // Considera hash aquí o al controlador
+  dataRegistre: { type: Date, default: Date.now },
+  actiu: { type: Boolean, default: true }
 });
 
-module.exports = mongoose.model('Usuari', usuariSchema);
+module.exports = mongoose.model('Usuari', UsuariSchema);
