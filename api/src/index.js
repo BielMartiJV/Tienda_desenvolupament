@@ -1,7 +1,7 @@
 // index.js
 require('dotenv').config();
 const express = require('express');
-const connectDB = require('./config/DB');
+const connectDB = require('./config/db');
 
 const app = express();
 
@@ -15,10 +15,10 @@ connectDB();
 app.get('/', (req, res) => res.send('API Ecommerce en marxa 🚀'));
 
 // --- Importació de les Rutes ---
-const productRoutes = require('./src/routes/productRoutes'); // Espasa Laser
-const usuariRoutes = require('./src/routes/usuariRoutes');
-const comandaRoutes = require('./src/routes/comandaRoutes');
-const pagamentRoutes = require('./src/routes/pagamentRoutes');
+const productRoutes = require('./routes/productRoutes');
+const usuariRoutes = require('./routes/usuariRoutes');
+const comandaRoutes = require('./routes/comandaRoutes');
+const pagamentRoutes = require('./routes/pagamentRoutes');
 
 // --- Muntatge de les Rutes amb prefixos ---
 app.use('/api/products', productRoutes);      // Ex: GET /api/products/
