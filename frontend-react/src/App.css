@@ -1,0 +1,62 @@
+/* ========================================
+   ROOT CONTAINER - SIN LIMITACIONES
+   ======================================== */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ========================================
+   LOGOS Y ANIMACIONES (si los necesitas)
+   ======================================== */
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #a78bfaaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #c084fcaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* ========================================
+   UTILIDADES GENERALES
+   ======================================== */
+
+.card {
+  padding: 2em;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.read-the-docs {
+  color: #a78bfa;
+}
