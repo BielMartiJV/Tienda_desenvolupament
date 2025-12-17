@@ -127,15 +127,15 @@ function Home() {
 
             {/* Hero Section */}
             <section className="relative z-10 min-h-screen flex items-center justify-center px-6">
-                <div className="max-w-6xl mx-auto text-center">
+                <div className="max-w-6xl mx-auto text-center flex flex-col items-center gap-8">
                     {/* Floating Badge */}
-                    <div className="inline-flex items-center gap-3 px-6 py-3 mb-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full animate-pulse">
+                    <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full animate-pulse">
                         <span className="w-2 h-2 bg-green-400 rounded-full" />
-                        <span className="text-sm font-medium text-gray-300 tracking-wide">Nova Col·lecció Galàctica 2024</span>
+                        <span className="text-sm font-medium text-gray-300 tracking-wide">Nova Col·lecció Galàctica 2025</span>
                     </div>
 
                     {/* Main Title */}
-                    <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6">
+                    <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter">
                         <span className="block" style={{ color: '#ffe919', textShadow: '0 0 40px rgba(255,233,25,0.3)' }}>
                             ESPASES
                         </span>
@@ -145,25 +145,21 @@ function Home() {
                     </h1>
 
                     {/* Subtitle */}
-                    <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    <p className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
                         La col·lecció més exclusiva d'armes Jedi i Sith de tota la galàxia.
                         <span className="text-cyan-400"> Que la Força t'acompanyi.</span>
                     </p>
 
                     {/* CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                        <a href="#cataleg" className="group relative px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold text-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="#cataleg" className="group relative px-16 py-6 bg-transparent rounded-xl font-bold text-2xl text-yellow-400 overflow-hidden transition-all duration-300 hover:scale-105 hover:bg-purple-500/10 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]">
                             <span className="relative z-10 flex items-center justify-center gap-3">
-                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                                 Explorar Catàleg
                             </span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
-                        <button className="px-10 py-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl font-bold text-lg transition-all duration-300 hover:bg-white/10 hover:border-white/40">
-                            Ofertes Especials
-                        </button>
                     </div>
 
                     {/* Stats Row */}
@@ -280,9 +276,9 @@ function Home() {
                                 </div>
 
                                 {/* Content */}
-                                <div className="relative p-8">
+                                <div className="relative p-8 text-center">
                                     {/* Color Tag */}
-                                    <div className="flex items-center gap-2 mb-5">
+                                    <div className="flex items-center justify-center gap-2 mb-5">
                                         <span className={`w-3 h-3 rounded-full ${colorMap[espada.colorFulla].bg} shadow-[0_0_10px_currentColor]`} />
                                         <span className={`text-xs font-bold uppercase tracking-widest ${colorMap[espada.colorFulla].text}`}>
                                             Cristall {colorMap[espada.colorFulla].name}
@@ -298,20 +294,20 @@ function Home() {
                                     <p className="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-2">
                                         {espada.descripcio}
                                     </p>
+                                </div>
 
-                                    {/* Footer */}
-                                    <div className="flex items-center justify-between pt-6 border-t border-white/10">
-                                        <div>
-                                            <span className="text-3xl font-black text-white">{espada.preu.toFixed(2)}</span>
-                                            <span className="text-sm text-gray-500 ml-1">€</span>
-                                        </div>
-                                        <button className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]`}>
-                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                            </svg>
-                                            Afegir
-                                        </button>
+                                {/* Footer - Centered Stack */}
+                                <div className="flex flex-col items-center gap-6 px-8 py-6 bg-white/5 border-t border-white/10">
+                                    <div>
+                                        <span className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">{espada.preu.toFixed(2)}</span>
+                                        <span className="text-sm text-gray-400 ml-1">€</span>
                                     </div>
+                                    <button className={`w-full flex items-center justify-center gap-3 px-6 py-5 rounded-xl font-bold text-lg transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]`}>
+                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                        Afegir
+                                    </button>
                                 </div>
                             </div>
                         ))}
