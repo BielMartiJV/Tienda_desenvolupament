@@ -2,6 +2,38 @@ import { useState } from 'react'
 
 function Home() {
     const [selectedColor, setSelectedColor] = useState('tots')
+    const [cart, setCart] = useState([])
+    const [isCartOpen, setIsCartOpen] = useState(false)
+
+    const addToCart = (product) => {
+        setCart(prevCart => {
+            const existingItem = prevCart.find(item => item.id === product.id)
+            if (existingItem) {
+                return prevCart.map(item =>
+                    item.id === product.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                )
+            }
+            return [...prevCart, { ...product, quantity: 1 }]
+        })
+        setIsCartOpen(true)
+    }
+
+    const removeFromCart = (productId) => {
+        setCart(prevCart => prevCart.filter(item => item.id !== productId))
+    }
+
+    const updateQuantity = (productId, newQuantity) => {
+        if (newQuantity < 1) return
+        setCart(prevCart => prevCart.map(item =>
+            item.id === productId ? { ...item, quantity: newQuantity } : item
+        ))
+    }
+
+    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
+    const totalPrice = cart.reduce((acc, item) => acc + (item.preu * item.quantity), 0)
+
 
     const espadas = [
         {
@@ -122,6 +154,120 @@ function Home() {
                     <div className="absolute top-1/4 -left-20 w-96 h-96 bg-purple-600 rounded-full blur-[128px]" />
                     <div className="absolute top-1/2 right-0 w-80 h-80 bg-blue-600 rounded-full blur-[128px]" />
                     <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-cyan-600 rounded-full blur-[128px]" />
+                </div>
+            </div>
+
+            {/* Cart Button */}
+            <button
+                onClick={() => setIsCartOpen(true)}
+                className="fixed top-6 right-6 z-50 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full hover:bg-white/20 transition-all duration-300 group"
+            >
+                <div className="relative">
+                    <svg className="w-6 h-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    {totalItems > 0 && (
+                        <span className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xs font-bold flex items-center justify-center animate-pulse">
+                            {totalItems}
+                        </span>
+                    )}
+                </div>
+            </button>
+
+            {/* Cart Sidebar */}
+            <div className={`fixed inset-0 z-[60] transition-all duration-500 ${isCartOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                {/* Backdrop */}
+                <div
+                    className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    onClick={() => setIsCartOpen(false)}
+                />
+
+                {/* Sidebar Panel */}
+                <div className={`absolute top-0 right-0 h-full w-full max-w-md bg-black/90 border-l border-white/10 shadow-[0_0_50px_rgba(168,85,247,0.2)] transform transition-transform duration-500 ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                    <div className="flex flex-col h-full p-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/10">
+                            <h2 className="text-2xl font-bold">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                                    La Teva Cistella
+                                </span>
+                            </h2>
+                            <button
+                                onClick={() => setIsCartOpen(false)}
+                                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Cart Items */}
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                            {cart.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-4">
+                                    <svg className="w-16 h-16 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    <p>La teva cistella és buida, jove Padawan</p>
+                                </div>
+                            ) : (
+                                cart.map(item => (
+                                    <div key={item.id} className="group relative flex gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500/30 transition-all">
+                                        <div className={`w-20 h-20 rounded-xl ${colorMap[item.colorFulla].bg} bg-opacity-20 flex items-center justify-center shrink-0`}>
+                                            <div className={`w-12 h-12 rounded-full ${colorMap[item.colorFulla].bg} opacity-50 blur-md`} />
+                                        </div>
+                                        <div className="flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <h3 className="font-bold text-sm text-gray-200 line-clamp-1">{item.nom}</h3>
+                                                <p className="text-xs text-gray-400 mt-1">Cristall {colorMap[item.colorFulla].name}</p>
+                                            </div>
+                                            <div className="flex items-center justify-between mt-2">
+                                                <div className="flex items-center gap-3 bg-black/40 rounded-lg p-1">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        className="w-6 h-6 flex items-center justify-center hover:bg-white/10 rounded transition-colors text-gray-400 hover:text-white"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="text-sm font-bold min-w-[1.5rem] text-center">{item.quantity}</span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        className="w-6 h-6 flex items-center justify-center hover:bg-white/10 rounded transition-colors text-gray-400 hover:text-white"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                                <span className="font-bold text-purple-400">{(item.preu * item.quantity).toFixed(2)}€</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => removeFromCart(item.id)}
+                                            className="absolute top-2 right-2 p-1.5 hover:bg-red-500/20 rounded-lg text-gray-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-6 pt-6 border-t border-white/10">
+                            <div className="flex items-center justify-between mb-6">
+                                <span className="text-gray-400">Total Estimat</span>
+                                <span className="text-3xl font-black text-white">{totalPrice.toFixed(2)}€</span>
+                            </div>
+                            <button
+                                className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold text-lg hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={cart.length === 0}
+                            >
+                                Procedir al Pagament
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -302,7 +448,10 @@ function Home() {
                                         <span className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">{espada.preu.toFixed(2)}</span>
                                         <span className="text-sm text-gray-400 ml-1">€</span>
                                     </div>
-                                    <button className={`w-full flex items-center justify-center gap-3 px-6 py-5 rounded-xl font-bold text-lg transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)]`}>
+                                    <button
+                                        onClick={() => addToCart(espada)}
+                                        className={`w-full flex items-center justify-center gap-3 px-6 py-5 rounded-xl font-bold text-lg transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] active:scale-95`}
+                                    >
                                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                         </svg>
