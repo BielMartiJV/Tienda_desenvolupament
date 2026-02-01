@@ -3,7 +3,7 @@ const comandaService = require('../services/comandaService');
 
 const createComanda = async (req, res) => {
   try {
-    const Comanda = await ComandaService.createComanda(req.body);
+    const Comanda = await comandaService.createComanda(req.body);
     res.status(201).json({ status: 'success', data: Comanda });
   } catch (error) {
     res.status(400).json({ status: 'error', message: error.message });
