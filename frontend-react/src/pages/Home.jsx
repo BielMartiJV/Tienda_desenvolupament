@@ -1,9 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function Home() {
     const [selectedColor, setSelectedColor] = useState('tots')
     const [cart, setCart] = useState([])
     const [isCartOpen, setIsCartOpen] = useState(false)
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:3000/api/products')
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const mappedProducts = data.data.map(p => ({
+                        ...p,
+                        id: p._id,
+                        imatge: "saber-placeholder"
+                    }))
+                    setProducts(mappedProducts)
+                } else {
+                    setError('Error: ' + JSON.stringify(data))
+                }
+                setLoading(false)
+            })
+            .catch(err => {
+                console.error("Error fetching products:", err)
+                setError('Error de connexió: ' + err.message + '. Assegura\'t que el backend està en marxa al port 3000.')
+                setLoading(false)
+            })
+    }, [])
 
     const addToCart = (product) => {
         setCart(prevCart => {
@@ -31,66 +58,36 @@ function Home() {
         ))
     }
 
+    const handleCheckout = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:3000/api/comandes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usuariId: "697fbcbb90c7c2dbf4eee8d6", // L'ID DE L'USUARI SEED
+                    total: totalPrice,
+                    espases: cart.map(item => ({
+                        espasaId: item.id,
+                        quantitat: item.quantity
+                    }))
+                })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                alert('Comanda realitzada amb èxit! Que la força t\'acompanyi.');
+                setCart([]);
+                setIsCartOpen(false);
+            } else {
+                alert('Error en la comanda: ' + (data.message || 'Error desconegut'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error connectant amb el servidor');
+        }
+    }
+
     const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
     const totalPrice = cart.reduce((acc, item) => acc + (item.preu * item.quantity), 0)
-
-
-    const espadas = [
-        {
-            id: 1,
-            nom: "Espasa de Darth Vader",
-            colorFulla: "vermell",
-            preu: 299.99,
-            estoc: 5,
-            descripcio: "L'espasa làser icònica del Senyor Fosc dels Sith. Cristall Kyber sagnós.",
-            imatge: "saber-placeholder"
-        },
-        {
-            id: 2,
-            nom: "Espasa de Luke Skywalker",
-            colorFulla: "verd",
-            preu: 349.99,
-            estoc: 3,
-            descripcio: "L'espasa llegendària del Jedi més poderós. Construïda a Tatooine.",
-            imatge: "saber-placeholder"
-        },
-        {
-            id: 3,
-            nom: "Espasa d'Obi-Wan Kenobi",
-            colorFulla: "blau",
-            preu: 329.99,
-            estoc: 7,
-            descripcio: "L'arma elegant d'un temps més civilitzat. Herència Jedi.",
-            imatge: "saber-placeholder"
-        },
-        {
-            id: 4,
-            nom: "Espasa de Mace Windu",
-            colorFulla: "porpra",
-            preu: 399.99,
-            estoc: 2,
-            descripcio: "L'única espasa porpra del Consell Jedi. Vapaad Master.",
-            imatge: "saber-placeholder"
-        },
-        {
-            id: 5,
-            nom: "Espasa del Temple Jedi",
-            colorFulla: "groc",
-            preu: 279.99,
-            estoc: 10,
-            descripcio: "Espasa d'entrenament dels Guardians del Temple.",
-            imatge: "saber-placeholder"
-        },
-        {
-            id: 6,
-            nom: "Espasa de Kylo Ren",
-            colorFulla: "vermell",
-            preu: 379.99,
-            estoc: 4,
-            descripcio: "Disseny inestable amb guarda creuada. Cristall esquinçat.",
-            imatge: "saber-placeholder"
-        }
-    ]
 
     const colorMap = {
         vermell: {
@@ -131,8 +128,8 @@ function Home() {
     }
 
     const espadasFiltradas = selectedColor === 'tots'
-        ? espadas
-        : espadas.filter(e => e.colorFulla === selectedColor)
+        ? products
+        : products.filter(e => e.colorFulla === selectedColor)
 
     return (
         <div className="min-h-screen bg-black text-white overflow-x-hidden">
@@ -214,13 +211,13 @@ function Home() {
                             ) : (
                                 cart.map(item => (
                                     <div key={item.id} className="group relative flex gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500/30 transition-all">
-                                        <div className={`w-20 h-20 rounded-xl ${colorMap[item.colorFulla].bg} bg-opacity-20 flex items-center justify-center shrink-0`}>
-                                            <div className={`w-12 h-12 rounded-full ${colorMap[item.colorFulla].bg} opacity-50 blur-md`} />
+                                        <div className={`w-20 h-20 rounded-xl ${colorMap[item.colorFulla]?.bg || 'bg-gray-700'} bg-opacity-20 flex items-center justify-center shrink-0`}>
+                                            <div className={`w-12 h-12 rounded-full ${colorMap[item.colorFulla]?.bg || 'bg-gray-500'} opacity-50 blur-md`} />
                                         </div>
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div>
                                                 <h3 className="font-bold text-sm text-gray-200 line-clamp-1">{item.nom}</h3>
-                                                <p className="text-xs text-gray-400 mt-1">Cristall {colorMap[item.colorFulla].name}</p>
+                                                <p className="text-xs text-gray-400 mt-1">Cristall {colorMap[item.colorFulla]?.name || 'Desconegut'}</p>
                                             </div>
                                             <div className="flex items-center justify-between mt-2">
                                                 <div className="flex items-center gap-3 bg-black/40 rounded-lg p-1">
@@ -261,6 +258,7 @@ function Home() {
                                 <span className="text-3xl font-black text-white">{totalPrice.toFixed(2)}€</span>
                             </div>
                             <button
+                                onClick={handleCheckout}
                                 className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-bold text-lg hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled={cart.length === 0}
                             >
@@ -378,9 +376,22 @@ function Home() {
                                 El Nostre Arsenal
                             </span>
                         </h2>
-                        <p className="text-gray-400 text-lg">
-                            <span className="text-purple-400 font-bold">{espadasFiltradas.length}</span> espases disponibles per a guerrers de la galàxia
-                        </p>
+                        {error ? (
+                            <div className="p-4 bg-red-900/50 border border-red-500 rounded-xl text-red-200 inline-block">
+                                <p className="font-bold">Error carregant productes:</p>
+                                <p>{error}</p>
+                            </div>
+                        ) : (
+                            <p className="text-gray-400 text-lg">
+                                {loading ? (
+                                    <span className="animate-pulse">Cargant arsenal de la República...</span>
+                                ) : (
+                                    <>
+                                        <span className="text-purple-400 font-bold">{espadasFiltradas.length}</span> espases disponibles per a guerrers de la galàxia
+                                    </>
+                                )}
+                            </p>
+                        )}
                     </div>
 
                     {/* Products Grid - Centered with Flexbox */}
@@ -396,15 +407,15 @@ function Home() {
                         {espadasFiltradas.map((espada, index) => (
                             <div
                                 key={espada.id}
-                                className={`group relative w-[380px] bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/10 transition-all duration-500 hover:-translate-y-3 hover:${colorMap[espada.colorFulla].glow} hover:${colorMap[espada.colorFulla].border}`}
+                                className={`group relative w-[380px] bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/10 transition-all duration-500 hover:-translate-y-3 hover:${colorMap[espada.colorFulla]?.glow || ''} hover:${colorMap[espada.colorFulla]?.border || ''}`}
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
-                                {/* Glow Effect on Hover */}
-                                <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${colorMap[espada.colorFulla].bg}`} />
+                                {/* Glow Effect on Hover - Added pointer-events-none */}
+                                <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${colorMap[espada.colorFulla]?.bg || ''} pointer-events-none`} />
 
                                 {/* Stock Badge */}
                                 {espada.estoc < 5 && (
-                                    <div className="absolute top-4 right-4 z-20 px-4 py-2 bg-red-500/20 backdrop-blur-sm border border-red-500/40 rounded-full">
+                                    <div className="absolute top-4 right-4 z-20 px-4 py-2 bg-red-500/20 backdrop-blur-sm border border-red-500/40 rounded-full pointer-events-none">
                                         <span className="text-xs font-bold text-red-400 flex items-center gap-1">
                                             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                                             {espada.estoc} unitats
@@ -413,21 +424,21 @@ function Home() {
                                 )}
 
                                 {/* Image Container - Placeholder */}
-                                <div className="relative h-56 flex items-center justify-center overflow-hidden">
+                                <div className="relative h-56 flex items-center justify-center overflow-hidden pointer-events-none">
                                     <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent`} />
                                     {/* Color Circle Placeholder */}
                                     <div
-                                        className={`w-32 h-32 rounded-full ${colorMap[espada.colorFulla].bg} transition-all duration-500 group-hover:scale-125 ${colorMap[espada.colorFulla].glow}`}
+                                        className={`w-32 h-32 rounded-full ${colorMap[espada.colorFulla]?.bg || 'bg-gray-700'} transition-all duration-500 group-hover:scale-125 ${colorMap[espada.colorFulla]?.glow || ''}`}
                                     />
                                 </div>
 
                                 {/* Content */}
-                                <div className="relative p-8 text-center">
+                                <div className="relative p-8 text-center pointer-events-none">
                                     {/* Color Tag */}
                                     <div className="flex items-center justify-center gap-2 mb-5">
-                                        <span className={`w-3 h-3 rounded-full ${colorMap[espada.colorFulla].bg} shadow-[0_0_10px_currentColor]`} />
-                                        <span className={`text-xs font-bold uppercase tracking-widest ${colorMap[espada.colorFulla].text}`}>
-                                            Cristall {colorMap[espada.colorFulla].name}
+                                        <span className={`w-3 h-3 rounded-full ${colorMap[espada.colorFulla]?.bg || 'bg-gray-500'} shadow-[0_0_10px_currentColor]`} />
+                                        <span className={`text-xs font-bold uppercase tracking-widest ${colorMap[espada.colorFulla]?.text || 'text-gray-400'}`}>
+                                            Cristall {colorMap[espada.colorFulla]?.name || 'Desc.'}
                                         </span>
                                     </div>
 
@@ -442,15 +453,18 @@ function Home() {
                                     </p>
                                 </div>
 
-                                {/* Footer - Centered Stack */}
-                                <div className="flex flex-col items-center gap-6 px-8 py-6 bg-white/5 border-t border-white/10">
+                                {/* Footer - Centered Stack - Added relative and z-10 */}
+                                <div className="relative z-10 flex flex-col items-center gap-6 px-8 py-6 bg-white/5 border-t border-white/10">
                                     <div>
                                         <span className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">{espada.preu.toFixed(2)}</span>
                                         <span className="text-sm text-gray-400 ml-1">€</span>
                                     </div>
                                     <button
-                                        onClick={() => addToCart(espada)}
-                                        className={`w-full flex items-center justify-center gap-3 px-6 py-5 rounded-xl font-bold text-lg transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] active:scale-95`}
+                                        onClick={() => {
+                                            console.log("Adding to cart:", espada);
+                                            addToCart(espada);
+                                        }}
+                                        className={`w-full flex items-center justify-center gap-3 px-6 py-5 rounded-xl font-bold text-lg transition-all duration-300 bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] active:scale-95 cursor-pointer`}
                                     >
                                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -509,7 +523,6 @@ function Home() {
                     </div>
                 </div>
             </section>
-
 
             {/* CSS Animation Keyframes */}
             <style>{`
