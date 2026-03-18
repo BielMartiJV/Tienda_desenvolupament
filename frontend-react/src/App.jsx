@@ -1,6 +1,9 @@
 import { Outlet, Link } from 'react-router-dom'
+import { useAuth } from './context/AuthContext'
 
 function App() {
+  const { user, logout } = useAuth()
+
   return (
     <div className="min-h-screen bg-black">
       {/* Premium Navigation Bar */}
@@ -32,21 +35,35 @@ function App() {
                   Inici
                 </Link>
 
-                <Link
-                  to="/login"
-                  className="px-5 py-2.5 text-gray-400 hover:text-white text-sm font-medium rounded-xl transition-all duration-300 hover:bg-white/5"
-                >
-                  Iniciar Sessió
-                </Link>
+                {user ? (
+                  <>
+                    <span className="px-5 py-2.5 text-yellow-400 text-sm font-bold">
+                      Hola, {user.nom}
+                    </span>
+                    <button
+                      onClick={logout}
+                      className="px-5 py-2.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm font-medium rounded-xl transition-all duration-300 border border-red-500/20"
+                    >
+                      Tancar Sessió
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="px-5 py-2.5 text-gray-400 hover:text-white text-sm font-medium rounded-xl transition-all duration-300 hover:bg-white/5"
+                    >
+                      Iniciar Sessió
+                    </Link>
 
-                <Link
-                  to="/register"
-                  className="px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/25 hover:scale-105"
-                >
-                  Registrar-se
-                </Link>
-
-
+                    <Link
+                      to="/register"
+                      className="px-5 py-2.5 text-gray-400 hover:text-white text-sm font-medium rounded-xl transition-all duration-300 hover:bg-white/5"
+                    >
+                      Registrar-se
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -1,11 +1,25 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function Home() {
+    const navigate = useNavigate()
+    const { user } = useAuth()
     const [selectedColor, setSelectedColor] = useState('tots')
-    const [cart, setCart] = useState([])
+    // Inicialitzem la cistella des de localStorage si existeix
+    const [cart, setCart] = useState(() => {
+        const savedCart = localStorage.getItem('cart')
+        return savedCart ? JSON.parse(savedCart) : []
+    })
     const [isCartOpen, setIsCartOpen] = useState(false)
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [showAuthModal, setShowAuthModal] = useState(false) // Estat pel modal d'autenticació
+
+    // Persistència de la cistella
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart))
+    }, [cart])
 
     const [error, setError] = useState(null)
 
@@ -59,31 +73,15 @@ function Home() {
     }
 
     const handleCheckout = async () => {
-        try {
-            const response = await fetch('http://127.0.0.1:3000/api/comandes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    usuariId: "697fbcbb90c7c2dbf4eee8d6", // L'ID DE L'USUARI SEED
-                    total: totalPrice,
-                    espases: cart.map(item => ({
-                        espasaId: item.id,
-                        quantitat: item.quantity
-                    }))
-                })
-            });
-            const data = await response.json();
-            if (data.status === 'success') {
-                alert('Comanda realitzada amb èxit! Que la força t\'acompanyi.');
-                setCart([]);
-                setIsCartOpen(false);
-            } else {
-                alert('Error en la comanda: ' + (data.message || 'Error desconegut'));
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error connectant amb el servidor');
+        if (!user) {
+            setShowAuthModal(true);
+            setIsCartOpen(false);
+            return;
         }
+        
+        // Simplement naveguem a la pàgina de pagament
+        // El cart ja es guarda a localStorage via useEffect
+        navigate('/payment');
     }
 
     const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
@@ -268,6 +266,63 @@ function Home() {
                     </div>
                 </div>
             </div>
+ 
+            {/* Auth Prompt Modal */}
+            {showAuthModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div 
+                        className="absolute inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-500"
+                        onClick={() => setShowAuthModal(false)}
+                    />
+                    
+                    {/* Modal Content */}
+                    <div className="relative bg-[#111] border-2 border-yellow-500/30 rounded-3xl p-8 md:p-12 max-w-lg w-full shadow-[0_0_50px_rgba(255,233,25,0.15)] animate-in zoom-in-95 duration-300">
+                        {/* Decorative Corners */}
+                        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-yellow-500 rounded-tl-3xl opacity-50" />
+                        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-right-2 border-yellow-500 rounded-tr-3xl opacity-50" />
+                        
+                        <div className="text-center">
+                            <div className="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-yellow-500/20">
+                                <svg className="w-10 h-10 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            
+                            <h2 className="text-3xl font-black text-white mb-4 tracking-tight">
+                                <span style={{ color: '#ffe919' }}>IDENTIFICACIÓ</span> REQUERIDA
+                            </h2>
+                            
+                            <p className="text-gray-400 mb-8 leading-relaxed">
+                                Per processar la teva comanda i assegurar el lliurament via hiperespai, necessitem saber qui ets, jove guerrer.
+                            </p>
+                            
+                            <div className="flex flex-col gap-4">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-yellow-500/20"
+                                >
+                                    Iniciar Sessió
+                                </button>
+                                
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-all"
+                                >
+                                    Crear Nou Compte
+                                </button>
+                                
+                                <button 
+                                    onClick={() => setShowAuthModal(false)}
+                                    className="mt-2 text-sm text-gray-500 hover:text-gray-400 underline underline-offset-4"
+                                >
+                                    Seguir mirant el catàleg
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Hero Section */}
             <section className="relative z-10 min-h-screen flex items-center justify-center px-6">
