@@ -50,16 +50,18 @@ app.get('/seed', async (req, res) => {
 });
 
 // --- Importació de les Rutes ---
+const authRoutes = require('./routes/authRoutes');       // Sessió 9: JWT Auth
 const productRoutes = require('./routes/productRoutes');
 const usuariRoutes = require('./routes/usuariRoutes');
 const comandaRoutes = require('./routes/comandaRoutes');
 const pagamentRoutes = require('./routes/pagamentRoutes');
 
 // --- Muntatge de les Rutes amb prefixos ---
+app.use('/api/auth', authRoutes);            // Ex: POST /api/auth/login
 app.use('/api/products', productRoutes);      // Ex: GET /api/products/
-app.use('/api/usuaris', usuariRoutes);       // Ex: GET /api/usuaris/
-app.use('/api/comandes', comandaRoutes);     // Ex: GET /api/comandes/
-app.use('/api/pagaments', pagamentRoutes);   // Ex: GET /api/pagaments/
+app.use('/api/usuaris', usuariRoutes);        // Ex: GET /api/usuaris/
+app.use('/api/comandes', comandaRoutes);      // Ex: GET /api/comandes/
+app.use('/api/pagaments', pagamentRoutes);    // Ex: GET /api/pagaments/
 
 // --- Inici del Servidor ---
 const PORT = process.env.PORT || 3000;
