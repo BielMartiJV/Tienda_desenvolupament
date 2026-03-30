@@ -2,6 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./docs/swagger');
 
 const app = express();
 
@@ -62,6 +64,14 @@ app.use('/api/products', productRoutes);      // Ex: GET /api/products/
 app.use('/api/usuaris', usuariRoutes);        // Ex: GET /api/usuaris/
 app.use('/api/comandes', comandaRoutes);      // Ex: GET /api/comandes/
 app.use('/api/pagaments', pagamentRoutes);    // Ex: GET /api/pagaments/
+
+// --- Swagger UI ---
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Accés a l'especificació JSON: GET /api-docs.json
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // --- Inici del Servidor ---
 const PORT = process.env.PORT || 3000;
