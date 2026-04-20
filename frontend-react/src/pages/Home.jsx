@@ -81,7 +81,7 @@ function Home() {
         
         // Simplement naveguem a la pàgina de pagament
         // El cart ja es guarda a localStorage via useEffect
-        navigate('/payment');
+        navigate('/checkout');
     }
 
     const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)

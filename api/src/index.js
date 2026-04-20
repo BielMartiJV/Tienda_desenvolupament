@@ -8,8 +8,19 @@ const swaggerSpec = require('./docs/swagger');
 const app = express();
 
 // Middleware per parsejar el body
-app.use(express.json());
+// Middleware global
 app.use(require('cors')());
+
+// 1. Ruta del Webhook (HA D'ANAR ABANS de express.json)
+const checkoutController = require('./controllers/checkoutController');
+app.post('/api/checkout/webhook', express.raw({ type: 'application/json' }), checkoutController.handleWebhook);
+
+// 2. Global JSON parsing (per a tota la resta)
+app.use(express.json());
+
+// 3. Altres rutes de Checkout (creació de sessió, etc.)
+const checkoutRoutes = require('./routes/checkoutRoutes');
+app.use('/api/checkout', checkoutRoutes);
 
 // Connexió a la base de dades
 connectDB();
@@ -64,6 +75,7 @@ app.use('/api/products', productRoutes);      // Ex: GET /api/products/
 app.use('/api/usuaris', usuariRoutes);        // Ex: GET /api/usuaris/
 app.use('/api/comandes', comandaRoutes);      // Ex: GET /api/comandes/
 app.use('/api/pagaments', pagamentRoutes);    // Ex: GET /api/pagaments/
+app.use('/api/orders', comandaRoutes);        // Brief 4.2: POST /api/orders
 
 // --- Swagger UI ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

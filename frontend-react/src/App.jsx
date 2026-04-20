@@ -73,6 +73,52 @@ function App() {
       {/* Spacer for fixed navbar */}
       <div className="h-[82px]" />
 
+      {/* Admin Mode Banner */}
+      {user?.role === 'admin' && (
+        <div style={{
+          background: 'linear-gradient(90deg, #7c3aed, #a855f7, #7c3aed)',
+          backgroundSize: '200% 100%',
+          animation: 'adminPulse 3s ease infinite',
+          padding: '0.5rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.75rem',
+          borderBottom: '1px solid #a855f7',
+        }}>
+          <span style={{ fontSize: '1.1rem' }}>⚙️</span>
+          <span style={{
+            color: '#fff',
+            fontWeight: '700',
+            fontSize: '0.85rem',
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+          }}>
+            Mode Administrador
+          </span>
+          <span style={{
+            background: 'rgba(255,255,255,0.2)',
+            color: '#fff',
+            fontSize: '0.7rem',
+            fontWeight: '600',
+            padding: '0.15rem 0.6rem',
+            borderRadius: '999px',
+            letterSpacing: '0.1em',
+          }}>
+            ADMIN
+          </span>
+          <span style={{ fontSize: '1.1rem' }}>⚙️</span>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes adminPulse {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
+
       {/* Main Content - This is where nested routes will render */}
       <main>
         <Outlet />
