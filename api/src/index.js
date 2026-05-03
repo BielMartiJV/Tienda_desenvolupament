@@ -68,6 +68,7 @@ const productRoutes = require('./routes/productRoutes');
 const usuariRoutes = require('./routes/usuariRoutes');
 const comandaRoutes = require('./routes/comandaRoutes');
 const pagamentRoutes = require('./routes/pagamentRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // --- Muntatge de les Rutes amb prefixos ---
 app.use('/api/auth', authRoutes);            // Ex: POST /api/auth/login
@@ -76,6 +77,7 @@ app.use('/api/usuaris', usuariRoutes);        // Ex: GET /api/usuaris/
 app.use('/api/comandes', comandaRoutes);      // Ex: GET /api/comandes/
 app.use('/api/pagaments', pagamentRoutes);    // Ex: GET /api/pagaments/
 app.use('/api/orders', comandaRoutes);        // Brief 4.2: POST /api/orders
+app.use('/api/dashboard', dashboardRoutes);   // Dashboard: GET /api/dashboard/user | /api/dashboard/admin
 
 // --- Swagger UI ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

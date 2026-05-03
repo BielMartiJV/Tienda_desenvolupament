@@ -37,6 +37,42 @@ function App() {
 
                 {user ? (
                   <>
+                    {/* Dashboard link per rol */}
+                    {user.role === 'admin' ? (
+                      <Link
+                        to="/dashboard/admin"
+                        style={{
+                          padding: '0.5rem 1.1rem',
+                          background: 'rgba(168,85,247,0.15)',
+                          color: '#a855f7',
+                          border: '1px solid rgba(168,85,247,0.3)',
+                          borderRadius: '0.75rem',
+                          fontSize: '0.85rem',
+                          fontWeight: 700,
+                          textDecoration: 'none',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        ⚙️ Panel Admin
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/dashboard/user"
+                        style={{
+                          padding: '0.5rem 1.1rem',
+                          background: 'rgba(255,233,25,0.1)',
+                          color: '#ffe919',
+                          border: '1px solid rgba(255,233,25,0.25)',
+                          borderRadius: '0.75rem',
+                          fontSize: '0.85rem',
+                          fontWeight: 700,
+                          textDecoration: 'none',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        👤 El meu Dashboard
+                      </Link>
+                    )}
                     <span className="px-5 py-2.5 text-yellow-400 text-sm font-bold">
                       Hola, {user.nom}
                     </span>
